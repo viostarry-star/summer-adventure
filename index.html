@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Summer Adventure Simple</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#fffaf0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Summer Adventure">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<style>
+:root{
+  --sage:#d8e6d2; --sage-deep:#7d9a76; --sand:#efe2c8; --sky:#d9eef9;
+  --ivory:#fffdf6; --paper:#fffaf0; --coral:#ef866f; --sun:#f7c85f;
+  --ink:#3d342b; --muted:#7a6d61; --line:#eadcc7; --blue:#4e95bd;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Maru Gothic ProN","Hiragino Sans","Yu Gothic","Meiryo",sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(circle at 12% 3%, rgba(247,200,95,.32), transparent 22%),
+    radial-gradient(circle at 92% 8%, rgba(137,202,231,.3), transparent 24%),
+    linear-gradient(180deg,#fffaf0 0%,#f7f0e2 44%,#eaf6f7 100%);
+  min-height:100vh;
+}
+.app{max-width:540px;margin:0 auto;padding:14px 14px 96px}
+.hero{
+  position:relative;overflow:hidden;background:rgba(255,253,246,.86);
+  border:1px solid rgba(234,220,199,.95);border-radius:30px;
+  padding:32px 18px 18px;box-shadow:0 18px 45px rgba(91,77,58,.12);min-height:220px;
+}
+.hero:before{content:"☀️";position:absolute;left:18px;top:16px;font-size:46px}
+.hero:after{content:"🌴 🐚";position:absolute;right:12px;top:22px;font-size:38px;transform:rotate(4deg)}
+.title{text-align:center;padding-top:28px;cursor:pointer;user-select:none}
+.title h1{margin:0;font-family:Georgia,"Times New Roman",serif;font-size:42px;line-height:1.05;font-weight:400;letter-spacing:.035em}
+.title .tagline{margin-top:14px;color:var(--muted);font-weight:700}
+.daily-message{margin:12px auto 0;display:inline-block;background:rgba(255,255,255,.7);border:1px solid var(--line);border-radius:999px;padding:8px 14px;font-size:13px}
+.clouds{position:absolute;left:18px;right:18px;bottom:12px;display:flex;justify-content:space-between;opacity:.85;font-size:28px}
+.top-grid{display:grid;grid-template-columns:1fr 1.45fr;gap:12px;margin-top:14px}
+.mini-card,.card,details{
+  background:rgba(255,253,246,.93);border:1px solid var(--line);border-radius:24px;
+  box-shadow:0 12px 30px rgba(91,77,58,.09)
+}
+.mini-card{padding:14px;min-height:120px}
+.date-card{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.date-card .year{font-size:18px;color:var(--muted)}
+.date-card .date{font-size:42px;font-weight:700;line-height:1.05}
+.date-card .weekday{font-size:18px;font-weight:700}
+.today-card{padding:18px;display:flex;flex-direction:column;justify-content:center}
+.today-card .card-title{font-family:Georgia,"Times New Roman",serif;font-size:25px}
+.small{font-size:13px;color:var(--muted);line-height:1.55}
+.section-title{text-align:center;margin:24px 0 12px;font-size:26px;font-weight:700;letter-spacing:.05em}
+.section-title:before{content:"🐚 ";font-size:22px}.section-title:after{content:" 🪶";font-size:22px}
+.card{padding:16px;margin:12px 0}.card h2{margin:0 0 12px;font-size:20px}
+.task{display:flex;align-items:center;gap:10px;padding:10px 8px;border-radius:16px;margin:4px 0;background:rgba(255,255,255,.78)}
+.task input{margin-left:auto;order:2;width:24px;height:24px;accent-color:var(--sage-deep)}
+.task span{order:1;flex:1}.task.done{background:#edf6e9;color:#60745b}.task.done span{text-decoration:line-through;text-decoration-thickness:2px;text-decoration-color:rgba(127,155,122,.45)}
+.category-grid{display:grid;grid-template-columns:1fr;gap:12px}
+details{padding:12px}
+summary{cursor:pointer;list-style:none;font-weight:700;font-size:19px;padding:3px 2px 8px}
+summary::-webkit-details-marker{display:none}summary:after{content:"＋";float:right;color:var(--coral)}details[open] summary:after{content:"−"}
+.schedule-list{display:grid;gap:8px}
+.schedule-item{background:white;border:1px solid var(--line);border-radius:18px;padding:12px;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center}
+.schedule-icon{font-size:25px}.schedule-title{font-weight:700}.schedule-time{font-size:13px;color:var(--muted)}
+.schedule-form{display:grid;gap:9px;background:rgba(255,255,255,.65);border:1px dashed #d4c2a6;border-radius:20px;padding:12px;margin-top:12px}
+input,select,textarea{font-family:inherit;border:1px solid var(--line);background:white;border-radius:14px;padding:10px;font-size:15px;min-width:0}
+textarea{width:100%;min-height:74px;resize:vertical}
+.days{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.days label{background:white;border:1px solid var(--line);border-radius:12px;text-align:center;padding:8px 0;font-size:13px}
+.days input{display:none}.days label.checked{background:#edf6e9;border-color:#9bbf95;font-weight:700}
+button{font-family:inherit;border:0;border-radius:999px;background:var(--coral);color:white;font-weight:700;padding:11px 16px;box-shadow:0 8px 18px rgba(239,134,111,.22)}
+button.secondary{background:var(--sage-deep)}
+button.ghost{background:#f4ede1;color:var(--muted);box-shadow:none}
+.delete-btn{background:#f4ede1;color:var(--muted);box-shadow:none;padding:8px 10px}
+.parent-panel{display:none;margin-top:12px;border:1px dashed #d4c2a6;background:rgba(255,255,255,.64);border-radius:22px;padding:12px}
+.parent-panel.open{display:block}
+.parent-hint{text-align:center;font-size:12px;color:var(--muted);margin-top:8px}
+.status-row{display:grid;grid-template-columns:1fr 110px;gap:12px;align-items:center;margin:12px 0}
+.notice{background:linear-gradient(135deg,#fff7df,#fffdf6);border:1px solid var(--line);border-radius:22px;padding:14px;text-align:center;font-weight:700}
+.points{background:white;border:1px solid var(--line);border-radius:22px;padding:14px;text-align:center}.points .num{font-family:Georgia,"Times New Roman",serif;font-size:38px;line-height:1}
+.city{margin-top:18px;background:linear-gradient(180deg,#dff1fb 0%,#ecf7ff 48%,#dbecd2 49%,#c8e3ba 100%);border:1px solid #cde2d2;border-radius:28px;overflow:hidden;box-shadow:0 12px 26px rgba(91,77,58,.1)}
+.city-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 6px}.city-title{font-size:24px;font-weight:700}
+.progress-wrap{background:rgba(255,255,255,.85);margin:0 16px 10px;padding:12px;border-radius:18px}.progressbar{height:10px;background:#eadfcd;border-radius:99px;overflow:hidden}.progressbar span{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--sage-deep),var(--coral));border-radius:99px}
+.city-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;padding:6px 10px 16px;align-items:stretch}
+.area-card{min-height:86px;background:rgba(255,255,255,.68);border:1px solid rgba(255,255,255,.9);border-radius:18px;padding:7px;display:flex;flex-direction:column;justify-content:space-between}
+.area-name{font-size:11px;font-weight:700;color:var(--muted)}
+.area-icons{font-size:25px;line-height:1.1;text-align:center;min-height:48px;display:flex;align-items:center;justify-content:center;flex-wrap:wrap}
+.area-count{font-size:11px;text-align:center;color:var(--muted)}
+.area-card.grow{animation:pop .28s ease}@keyframes pop{0%{transform:scale(.7)}70%{transform:scale(1.12)}100%{transform:scale(1)}}
+.photo-box{border:1.5px dashed #d4c2a6;border-radius:22px;background:rgba(255,255,255,.78);padding:14px;text-align:center}
+.photo-preview{width:100%;max-height:330px;object-fit:cover;border-radius:18px;display:none;margin:10px 0;border:1px solid var(--line)}
+.photo-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:10px}
+.hidden-input{display:none}
+.memo-row{display:grid;gap:8px;margin-top:12px}
+.journal-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.journal-cell{background:white;border:1px solid var(--line);border-radius:16px;min-height:92px;padding:8px;overflow:hidden}
+.journal-cell img{width:100%;height:64px;object-fit:cover;border-radius:12px}
+.journal-date{font-weight:700;font-size:12px;color:var(--muted)}
+.stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.stat{background:white;border:1px solid var(--line);border-radius:16px;padding:12px;text-align:center}.stat strong{font-size:24px}
+.screen{display:none}.screen.active{display:block}
+.bottom-nav{position:fixed;left:50%;bottom:12px;transform:translateX(-50%);width:min(520px,calc(100% - 24px));background:rgba(255,253,246,.94);backdrop-filter:blur(12px);border:1px solid var(--line);box-shadow:0 14px 38px rgba(91,77,58,.16);border-radius:24px;display:grid;grid-template-columns:repeat(5,1fr);padding:8px;z-index:20}
+.nav-item{text-align:center;font-size:11px;color:var(--muted);font-weight:700;border:0;background:transparent;box-shadow:none;padding:4px 0}.nav-item .ico{display:block;font-size:23px}.nav-item.active{color:var(--blue);background:#eef8ff;border-radius:18px}
+@media (min-width:760px){.app{max-width:980px}.category-grid{grid-template-columns:repeat(2,1fr)}.top-grid{grid-template-columns:150px 1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+<section class="hero">
+  <div class="title" id="heroTitle">
+    <h1>Summer Adventure</h1>
+    <div class="tagline">毎日を冒険にしよう！</div>
+    <div class="daily-message" id="dailyMessage">🌿 今日は何を見つけよう？</div>
+  </div>
+  <div class="clouds"><span>☁️</span><span>🕊️</span><span>☁️</span></div>
+</section>
+
+<div class="screen active" id="screen-today">
+  <div class="top-grid">
+    <div class="mini-card date-card">
+      <div class="year" id="yearText"></div>
+      <div class="date" id="monthDayText"></div>
+      <div class="weekday" id="weekdayText"></div>
+    </div>
+    <div class="mini-card today-card">
+      <div class="card-title">Today's Adventure</div>
+      <div class="small" id="packetStatus"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>今日の予定</h2>
+    <div id="todaySchedules" class="schedule-list"></div>
+    <div class="parent-hint">予定の追加・編集は親モードでできます</div>
+    <div id="parentPanel" class="parent-panel">
+      <strong>⚙️ 親モード：予定登録・追加</strong>
+      <div class="small">タイトル部分を長押しすると開閉できます。</div>
+      <div class="schedule-form">
+        <select id="scheduleIcon">
+          <option>🏫</option><option>🤖</option><option>🎨</option><option>🏊</option><option>🧘</option><option>🏛️</option><option>🎂</option><option>🚗</option><option>✈️</option><option>♨️</option><option>🏨</option><option>🏀</option>
+        </select>
+        <input id="scheduleTitle" placeholder="予定名 例：サマースクール">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input id="scheduleStart" type="date"><input id="scheduleEnd" type="date"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input id="scheduleStartTime" type="time"><input id="scheduleEndTime" type="time"></div>
+        <div class="days" id="daysBox">
+          <label><input type="checkbox" value="1">月</label><label><input type="checkbox" value="2">火</label><label><input type="checkbox" value="3">水</label><label><input type="checkbox" value="4">木</label><label><input type="checkbox" value="5">金</label><label><input type="checkbox" value="6">土</label><label><input type="checkbox" value="0">日</label>
+        </div>
+        <button type="button" id="addScheduleBtn">予定を追加</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">今日は何した？</div>
+
+  <div class="card">
+    <h2>必須 <span class="small">(Required)</span></h2>
+    <label class="task" id="packetTask"><input type="checkbox" data-task="summer_packet"> <span>📄 Summer Packet <span class="small" id="packetLabel"></span></span></label>
+    <label class="task"><input type="checkbox" data-task="piano"> <span>🎹 ピアノ (Piano)</span></label>
+    <label class="task"><input type="checkbox" data-task="reading"> <span>📚 読書 (Reading)<br><span class="small">Fort Lee Summer Reading Program / ライブラリートークン対象</span></span></label>
+    <div class="small">※ Summer Packetは平日のみ表示されます。</div>
+  </div>
+
+  <div class="category-grid">
+    <details open><summary>✍️ 学び (Learning)</summary>
+      <label class="task"><input type="checkbox" data-task="kanji"> <span>✍️ 漢字 (Kanji)</span></label>
+      <label class="task"><input type="checkbox" data-task="challenge_touch"> <span>📱 チャレンジタッチ (Challenge Touch)</span></label>
+    </details>
+    <details><summary>🎨 クリエイティブ (Creative)</summary>
+      <label class="task"><input type="checkbox" data-task="drawing"> <span>🎨 お絵かき (Drawing)</span></label>
+      <label class="task"><input type="checkbox" data-task="craft"> <span>✂️ 工作 (Craft)</span></label>
+      <label class="task"><input type="checkbox" data-task="lego"> <span>🧱 LEGO</span></label>
+    </details>
+    <details><summary>🧪 サイエンス (Science)</summary>
+      <label class="task"><input type="checkbox" data-task="science"> <span>🧪 実験 (Science)</span></label>
+      <label class="task"><input type="checkbox" data-task="observation"> <span>🔍 観察 (Observation)</span></label>
+    </details>
+    <details><summary>🌳 あそび (Outdoor Play)</summary>
+      <label class="task"><input type="checkbox" data-task="outdoor"> <span>🌳 外遊び (Outdoor Play)</span></label>
+      <label class="task"><input type="checkbox" data-task="scooter"> <span>🛴 スクーター (Scooter)</span></label>
+      <label class="task"><input type="checkbox" data-task="swimming"> <span>🏊 プール (Swimming)</span></label>
+    </details>
+    <details><summary>🎮 ゲーム (Games)</summary>
+      <label class="task"><input type="checkbox" data-task="minecraft"> <span>⛏️ Minecraft</span></label>
+      <label class="task"><input type="checkbox" data-task="cities"> <span>🏙️ Cities: Skylines</span></label>
+      <label class="task"><input type="checkbox" data-task="analog"> <span>🎲 アナログゲーム (Analog Games)</span></label>
+    </details>
+  </div>
+
+  <div class="card">
+    <h2>今日のまとめ</h2>
+    <p class="small">チェックしたこと、写真、ひとことメモがAdventure Journalに残ります。</p>
+  </div>
+
+  <div class="card">
+    <h2>📷 今日の1枚</h2>
+    <div class="photo-box">
+      <img id="photoPreview" class="photo-preview" alt="今日の写真">
+      <input id="photoInput" class="hidden-input" type="file" accept="image/*">
+      <div class="photo-actions">
+        <button type="button" id="choosePhotoBtn">写真を選ぶ</button>
+        <button type="button" class="ghost" id="removePhotoBtn">写真を削除</button>
+      </div>
+      <div class="memo-row">
+        <textarea id="memoInput" placeholder="今日のひとことを書く"></textarea>
+        <button type="button" class="secondary" id="saveMemoBtn">メモを保存</button>
+      </div>
+      <p class="small">写真とメモは、この端末の同じブラウザ内に日付ごとに保存されます。</p>
+    </div>
+  </div>
+
+</div>
+
+<div class="screen" id="screen-calendar"><div class="card"><h2>📅 カレンダー</h2><p class="small">登録済みの予定一覧です。</p><div id="allSchedules" class="schedule-list"></div></div></div>
+<div class="screen" id="screen-journal"><div class="card"><h2>📖 Adventure Journal</h2><p class="small">写真やメモを書いた日がここに残ります。</p><div id="journalGrid" class="journal-grid"></div></div></div>
+<div class="screen" id="screen-review"><div class="card"><h2>🌞 夏のふりかえり</h2><div id="reviewStats" class="stat-grid"></div></div></div>
+<div class="screen" id="screen-record"><div class="card"><h2>🏆 記録</h2><p class="small">外部フォントなしのオフライン対応版です。予定・チェック・写真・メモを保存します。</p><button type="button" class="ghost" id="exportBtn">データを書き出し</button><textarea id="exportArea" placeholder="ここに書き出しデータが表示されます"></textarea></div></div>
+</div>
+
+<nav class="bottom-nav">
+  <button class="nav-item active" data-screen="today"><span class="ico">🏠</span>きょう</button>
+  <button class="nav-item" data-screen="calendar"><span class="ico">📅</span>カレンダー</button>
+  <button class="nav-item" data-screen="journal"><span class="ico">📖</span>日記</button>
+  <button class="nav-item" data-screen="review"><span class="ico">🌞</span>ふりかえり</button>
+  <button class="nav-item" data-screen="record"><span class="ico">🏆</span>記録</button>
+</nav>
+
+<script>
+(function(){
+const APP_KEY = "summerAdventureStableFinal";
+const OLD_APP_KEYS = ["summerAdventureOfflineOnePointOne","summerAdventureOfflineOne","summerAdventureOnePointThree","summerAdventureOnePointTwo","summerAdventureOne"];
+const DB_NAME = "summerAdventurePhotos";
+const STORE = "photos";
+const START = new Date(2026,5,29);
+const MAX_DAYS = 50;
+const today = new Date();
+const keyDate = today.toISOString().slice(0,10);
+
+const taskLabels = {
+  summer_packet:"Summer Packet", piano:"ピアノ", reading:"読書", kanji:"漢字", challenge_touch:"チャレンジタッチ",
+  drawing:"お絵かき", craft:"工作", lego:"LEGO", science:"実験", observation:"観察", outdoor:"外遊び",
+  scooter:"スクーター", swimming:"プール", minecraft:"Minecraft", cities:"Cities: Skylines", analog:"アナログゲーム"
+};
+const taskAreas = {
+  summer_packet:"learning", piano:"creative", reading:"learning", kanji:"learning", challenge_touch:"learning",
+  drawing:"creative", craft:"creative", lego:"creative", science:"science", observation:"science",
+  outdoor:"outdoor", scooter:"outdoor", swimming:"outdoor", minecraft:"game", cities:"game", analog:"game"
+};
+const areaInfo = {
+  learning:{name:"学び", icons:["📚","🏫","📝","📖","🌟"]},
+  creative:{name:"アート", icons:["🎨","🖼️","🧱","✂️","🏡"]},
+  science:{name:"科学", icons:["🔬","🧪","🔭","🌱","🏛️"]},
+  outdoor:{name:"自然", icons:["🌳","🌻","🏊","🛴","⛲"]},
+  game:{name:"ゲーム", icons:["⛏️","🏙️","🎲","🎮","🎡"]}
+};
+
+let db = null;
+let state = JSON.parse(localStorage.getItem(APP_KEY) || "null");
+if(!state){
+  for(const oldKey of OLD_APP_KEYS){
+    const oldData = localStorage.getItem(oldKey);
+    if(oldData){ try{ state = JSON.parse(oldData); break; }catch(e){} }
+  }
+}
+if(!state) state = {};
+if(!state.days) state.days = {};
+if(!state.city) state.city = {points:0, buildings:0};
+if(!state.city.areaCounts) state.city.areaCounts = {learning:0, creative:0, science:0, outdoor:0, game:0};
+if(!state.schedules) state.schedules = [];
+if(!state.days[keyDate]) state.days[keyDate] = {};
+
+function save(){ localStorage.setItem(APP_KEY, JSON.stringify(state)); }
+function addDefaults(){
+  if(state.hasStableDefaults) return;
+  const ids = new Set(state.schedules.map(s=>s.id));
+  const defaults = [
+    {id:"ss_2026_0629", icon:"🏫", title:"サマースクール", start:"2026-06-29", end:"2026-07-02", days:["1","2","3","4"], startTime:"09:00", endTime:"15:00"},
+    {id:"ss_2026_0706", icon:"🏫", title:"サマースクール", start:"2026-07-06", end:"2026-07-10", days:["1","2","3","4","5"], startTime:"09:00", endTime:"15:00"},
+    {id:"travel_japan_0715", icon:"✈️", title:"日本への移動", start:"2026-07-15", end:"2026-07-15", days:["3"], startTime:"", endTime:""},
+    {id:"gero_0721", icon:"♨️", title:"下呂温泉旅行", start:"2026-07-21", end:"2026-07-22", days:["2","3"], startTime:"", endTime:""},
+    {id:"odawara_0725", icon:"🚗", title:"由一郎くん家族と小田原旅行", start:"2026-07-25", end:"2026-07-26", days:["6","0"], startTime:"", endTime:""},
+    {id:"tokyo_0730", icon:"🏨", title:"東京宿泊", start:"2026-07-30", end:"2026-07-30", days:["4"], startTime:"", endTime:""},
+    {id:"travel_us_0731", icon:"✈️", title:"日本からアメリカへ移動", start:"2026-07-31", end:"2026-07-31", days:["5"], startTime:"", endTime:""},
+    {id:"ss_2026_0810", icon:"🏫", title:"サマースクール", start:"2026-08-10", end:"2026-08-14", days:["1","2","3","4","5"], startTime:"09:00", endTime:"15:00"},
+    {id:"basket_2026_0817", icon:"🏀", title:"バスケットボール サマースクール", start:"2026-08-17", end:"2026-08-21", days:["1","2","3","4","5"], startTime:"09:00", endTime:"13:00"}
+  ];
+  defaults.forEach(s=>{ if(!ids.has(s.id)) state.schedules.push(s); });
+  state.hasStableDefaults = true;
+  save();
+}
+
+function openDB(){
+  return new Promise(resolve=>{
+    if(!("indexedDB" in window)){ resolve(null); return; }
+    const req = indexedDB.open(DB_NAME,1);
+    req.onupgradeneeded = e => e.target.result.createObjectStore(STORE);
+    req.onsuccess = e => { db = e.target.result; resolve(db); };
+    req.onerror = () => resolve(null);
+  });
+}
+function photoPut(date, dataUrl){
+  if(!db) return Promise.resolve();
+  return new Promise(resolve=>{ const tx=db.transaction(STORE,"readwrite"); tx.objectStore(STORE).put(dataUrl,date); tx.oncomplete=resolve; tx.onerror=resolve; });
+}
+function photoGet(date){
+  if(!db) return Promise.resolve(null);
+  return new Promise(resolve=>{ const tx=db.transaction(STORE,"readonly"); const req=tx.objectStore(STORE).get(date); req.onsuccess=()=>resolve(req.result||null); req.onerror=()=>resolve(null); });
+}
+function photoDelete(date){
+  if(!db) return Promise.resolve();
+  return new Promise(resolve=>{ const tx=db.transaction(STORE,"readwrite"); tx.objectStore(STORE).delete(date); tx.oncomplete=resolve; tx.onerror=resolve; });
+}
+
+function dateSetup(){
+  document.getElementById("yearText").textContent = today.getFullYear();
+  document.getElementById("monthDayText").textContent = `${today.getMonth()+1}/${today.getDate()}`;
+  document.getElementById("weekdayText").textContent = ["日","月","火","水","木","金","土"][today.getDay()];
+  const messages = ["🌿 今日は何を見つけよう？","🐚 小さな冒険も、大切な思い出。","🎨 新しい作品が生まれるかも。","📚 本の中にも冒険が待っているよ。","☀️ 今日も素敵な一日になりそう！"];
+  document.getElementById("dailyMessage").textContent = messages[today.getDate() % messages.length];
+}
+function weekdayIndexFromStart(date){
+  const d0 = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  if(d0 < START) return 0;
+  let count = 0, cur = new Date(START);
+  while(cur <= d0){ const day = cur.getDay(); if(day !== 0 && day !== 6) count++; cur.setDate(cur.getDate()+1); }
+  return Math.min(count, MAX_DAYS);
+}
+function packetSetup(){
+  const isWeekend = today.getDay() === 0 || today.getDay() === 6;
+  const idx = weekdayIndexFromStart(today);
+  const packetTask = document.getElementById("packetTask");
+  if(isWeekend){
+    document.getElementById("packetStatus").textContent = "今日は週末なので、Summer Packetは表示しません。";
+    packetTask.style.display = "none"; return;
+  }
+  if(idx === 0){
+    document.getElementById("packetStatus").textContent = "Summer Packetは 2026年6月29日（月）から始まります。";
+    packetTask.style.display = "none"; return;
+  }
+  const week = Math.ceil(idx/5);
+  const day = ((idx-1)%5)+1;
+  document.getElementById("packetLabel").textContent = `(Week ${week} Day ${day})`;
+  document.getElementById("packetStatus").textContent = "今日の冒険を記録しよう。";
+  packetTask.style.display = "flex";
+}
+function setupTasks(){
+  document.querySelectorAll("input[type=checkbox][data-task]").forEach(box=>{
+    const task = box.dataset.task;
+    box.checked = !!state.days[keyDate][task];
+    box.closest(".task").classList.toggle("done", box.checked);
+    box.addEventListener("change", ()=>{
+      const was = !!state.days[keyDate][task];
+      state.days[keyDate][task] = box.checked;
+      box.closest(".task").classList.toggle("done", box.checked);
+      save(); renderReview();
+    });
+  });
+}
+function dateOnly(d){ return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+function parseDate(str){ const parts=str.split("-").map(Number); return new Date(parts[0],parts[1]-1,parts[2]); }
+function timeLabel(start,end){
+  if(!start && !end) return "";
+  const f=t=>{ if(!t) return ""; const parts=t.split(":").map(Number); const h=parts[0], m=parts[1]; const suffix=h>=12?"PM":"AM"; const hh=h%12||12; return `${hh}:${String(m).padStart(2,"0")} ${suffix}`; };
+  return `${f(start)}${end ? " – " + f(end) : ""}`;
+}
+function scheduleApplies(s){
+  if(!s.start || !s.end) return false;
+  const t=dateOnly(today), start=parseDate(s.start), end=parseDate(s.end);
+  if(t<start || t>end) return false;
+  return (s.days||[]).includes(String(today.getDay()));
+}
+function scheduleRow(s){
+  const row=document.createElement("div");
+  row.className="schedule-item";
+  const days=["日","月","火","水","木","金","土"];
+  row.innerHTML=`<div class="schedule-icon">${s.icon}</div><div><div class="schedule-title">${s.title}</div><div class="schedule-time">${timeLabel(s.startTime,s.endTime)}<br>${s.start}〜${s.end} / ${(s.days||[]).map(x=>days[Number(x)]).join("・")}</div></div><button class="delete-btn" data-id="${s.id}">削除</button>`;
+  const btn=row.querySelector(".delete-btn");
+  btn.addEventListener("click",()=>{ state.schedules=state.schedules.filter(x=>x.id!==s.id); save(); renderSchedules(); });
+  return row;
+}
+function renderSchedules(){
+  const list=document.getElementById("todaySchedules");
+  const todays=state.schedules.filter(scheduleApplies);
+  list.innerHTML="";
+  if(!todays.length) list.innerHTML='<div class="small">今日の固定予定はまだありません。</div>';
+  else todays.forEach(s=>list.appendChild(scheduleRow(s)));
+  const all=document.getElementById("allSchedules");
+  all.innerHTML="";
+  if(!state.schedules.length) all.innerHTML='<div class="small">登録済みの固定予定はまだありません。</div>';
+  else state.schedules.forEach(s=>all.appendChild(scheduleRow(s)));
+}
+function setupScheduleForm(){
+  document.querySelectorAll("#daysBox input").forEach(inp=>{
+    inp.addEventListener("change",()=>inp.parentElement.classList.toggle("checked", inp.checked));
+  });
+  document.getElementById("addScheduleBtn").addEventListener("click",()=>{
+    const title=document.getElementById("scheduleTitle").value.trim();
+    const start=document.getElementById("scheduleStart").value;
+    const end=document.getElementById("scheduleEnd").value || start;
+    const days=Array.from(document.querySelectorAll("#daysBox input:checked")).map(x=>x.value);
+    if(!title || !start || !end || !days.length){ alert("予定名、日付、曜日を入力してください。"); return; }
+    state.schedules.push({id:String(Date.now()), icon:document.getElementById("scheduleIcon").value, title, start, end, days, startTime:document.getElementById("scheduleStartTime").value, endTime:document.getElementById("scheduleEndTime").value});
+    ["scheduleTitle","scheduleStart","scheduleEnd","scheduleStartTime","scheduleEndTime"].forEach(id=>document.getElementById(id).value="");
+    document.querySelectorAll("#daysBox input").forEach(x=>{x.checked=false; x.parentElement.classList.remove("checked");});
+    save(); renderSchedules();
+  });
+}
+function renderCity(){}
+async function loadTodayPhoto(){
+  const img=document.getElementById("photoPreview");
+  const data=await photoGet(keyDate);
+  if(data){ img.src=data; img.style.display="block"; } else { img.removeAttribute("src"); img.style.display="none"; }
+}
+function setupPhoto(){
+  const input=document.getElementById("photoInput");
+  document.getElementById("choosePhotoBtn").addEventListener("click",()=>input.click());
+  input.addEventListener("change",()=>{
+    const file=input.files && input.files[0]; if(!file) return;
+    const reader=new FileReader();
+    reader.onload=async e=>{ await photoPut(keyDate,e.target.result); await loadTodayPhoto(); await renderJournal(); };
+    reader.readAsDataURL(file);
+  });
+  document.getElementById("removePhotoBtn").addEventListener("click",async()=>{ await photoDelete(keyDate); await loadTodayPhoto(); await renderJournal(); });
+  document.getElementById("memoInput").value=state.days[keyDate].memo || "";
+  document.getElementById("saveMemoBtn").addEventListener("click",()=>{ state.days[keyDate].memo=document.getElementById("memoInput").value.trim(); save(); renderJournal(); });
+}
+async function renderJournal(){
+  const grid=document.getElementById("journalGrid");
+  grid.innerHTML="";
+  const dates=Object.keys(state.days).sort().reverse();
+  if(!dates.length){ grid.innerHTML='<div class="small">まだ記録がありません。</div>'; return; }
+  for(const date of dates.slice(0,30)){
+    const cell=document.createElement("div");
+    cell.className="journal-cell";
+    const photo=await photoGet(date);
+    const done=Object.entries(state.days[date]).filter(([k,v])=>v===true && taskLabels[k]).map(([k])=>taskLabels[k]);
+    cell.innerHTML=`<div class="journal-date">${date.slice(5).replace("-","/")}</div>${photo ? `<img src="${photo}">` : `<div style="font-size:30px;text-align:center;padding:14px">📖</div>`}<div class="small">${done.slice(0,2).join("・") || "記録"}</div>`;
+    grid.appendChild(cell);
+  }
+}
+function renderReview(){
+  const counts={};
+  Object.values(state.days).forEach(day=>{ Object.entries(day).forEach(([k,v])=>{ if(v===true && taskLabels[k]) counts[k]=(counts[k]||0)+1; }); });
+  const top=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const box=document.getElementById("reviewStats"); box.innerHTML="";
+  if(!top.length){ box.innerHTML='<div class="small">まだ活動記録がありません。</div>'; return; }
+  top.forEach(([k,c])=>{ const div=document.createElement("div"); div.className="stat"; div.innerHTML=`<div>${taskLabels[k]}</div><strong>${c}</strong><div class="small">日</div>`; box.appendChild(div); });
+}
+function setupNav(){
+  document.querySelectorAll(".nav-item").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      document.querySelectorAll(".nav-item").forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
+      document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+      document.getElementById("screen-"+btn.dataset.screen).classList.add("active");
+      renderSchedules(); renderJournal(); renderReview(); window.scrollTo({top:0,behavior:"smooth"});
+    });
+  });
+}
+function setupParentMode(){
+  const title=document.getElementById("heroTitle");
+  const panel=document.getElementById("parentPanel");
+  let timer=null;
+  const toggle=()=>panel.classList.toggle("open");
+  title.addEventListener("mousedown",()=>{timer=setTimeout(toggle,900);});
+  title.addEventListener("mouseup",()=>clearTimeout(timer));
+  title.addEventListener("mouseleave",()=>clearTimeout(timer));
+  title.addEventListener("touchstart",()=>{timer=setTimeout(toggle,900);},{passive:true});
+  title.addEventListener("touchend",()=>clearTimeout(timer));
+}
+function setupExport(){
+  document.getElementById("exportBtn").addEventListener("click",()=>{ document.getElementById("exportArea").value=JSON.stringify(state,null,2); });
+}
+async function init(){
+  addDefaults(); dateSetup(); packetSetup(); setupTasks(); setupScheduleForm(); setupNav(); setupParentMode(); setupExport();
+  await openDB(); setupPhoto(); renderSchedules(); renderReview(); await loadTodayPhoto(); await renderJournal(); save();
+}
+init();
+})();
+</script>
+</body>
+</html>
