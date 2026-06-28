@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Summer Adventure Simple</title>
+<title>Summer Adventure</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#fffaf0">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -134,10 +134,10 @@ button.ghost{background:#f4ede1;color:var(--muted);box-shadow:none}
   <div class="card">
     <h2>今日の予定</h2>
     <div id="todaySchedules" class="schedule-list"></div>
-    <div class="parent-hint">予定の追加・編集は親モードでできます</div>
+    <div class="parent-hint">予定の追加は「Summer Adventure」を長押しして親モードからできます</div>
     <div id="parentPanel" class="parent-panel">
-      <strong>⚙️ 親モード：予定登録・追加</strong>
-      <div class="small">タイトル部分を長押しすると開閉できます。</div>
+      <strong>⚙️ 親モード：予定を追加</strong>
+      <div class="small">日付を入れると曜日は自動で入ります。時間も必要に応じて入力できます。</div>
       <div class="schedule-form">
         <select id="scheduleIcon">
           <option>🏫</option><option>🤖</option><option>🎨</option><option>🏊</option><option>🧘</option><option>🏛️</option><option>🎂</option><option>🚗</option><option>✈️</option><option>♨️</option><option>🏨</option><option>🏀</option>
@@ -148,6 +148,7 @@ button.ghost{background:#f4ede1;color:var(--muted);box-shadow:none}
         <div class="days" id="daysBox">
           <label><input type="checkbox" value="1">月</label><label><input type="checkbox" value="2">火</label><label><input type="checkbox" value="3">水</label><label><input type="checkbox" value="4">木</label><label><input type="checkbox" value="5">金</label><label><input type="checkbox" value="6">土</label><label><input type="checkbox" value="0">日</label>
         </div>
+        <div class="small">曜日は自動入力されます。必要なら手動で調整できます。</div>
         <button type="button" id="addScheduleBtn">予定を追加</button>
       </div>
     </div>
@@ -380,28 +381,81 @@ function scheduleRow(s){
   btn.addEventListener("click",()=>{ state.schedules=state.schedules.filter(x=>x.id!==s.id); save(); renderSchedules(); });
   return row;
 }
+function scheduleSortValue(s){
+  const time = s.startTime || "99:99";
+  return `${s.start || "9999-99-99"} ${time}`;
+}
 function renderSchedules(){
   const list=document.getElementById("todaySchedules");
-  const todays=state.schedules.filter(scheduleApplies);
+  const todays=state.schedules.filter(scheduleApplies).sort((a,b)=>{
+    const at=a.startTime || "99:99";
+    const bt=b.startTime || "99:99";
+    return at.localeCompare(bt) || (a.title||"").localeCompare(b.title||"");
+  });
   list.innerHTML="";
   if(!todays.length) list.innerHTML='<div class="small">今日の固定予定はまだありません。</div>';
   else todays.forEach(s=>list.appendChild(scheduleRow(s)));
+
   const all=document.getElementById("allSchedules");
   all.innerHTML="";
-  if(!state.schedules.length) all.innerHTML='<div class="small">登録済みの固定予定はまだありません。</div>';
-  else state.schedules.forEach(s=>all.appendChild(scheduleRow(s)));
+  const sorted=[...state.schedules].sort((a,b)=>scheduleSortValue(a).localeCompare(scheduleSortValue(b)));
+  if(!sorted.length) all.innerHTML='<div class="small">登録済みの固定予定はまだありません。</div>';
+  else sorted.forEach(s=>all.appendChild(scheduleRow(s)));
+}
+function getAutoDays(startStr,endStr){
+  if(!startStr) return [];
+  const start=parseDate(startStr);
+  const end=endStr ? parseDate(endStr) : start;
+  if(isNaN(start) || isNaN(end)) return [];
+  const days=new Set();
+  const cur=new Date(start);
+  const final=end < start ? start : end;
+  while(cur <= final){
+    days.add(String(cur.getDay()));
+    cur.setDate(cur.getDate()+1);
+  }
+  return Array.from(days).sort((a,b)=>Number(a)-Number(b));
+}
+function setDayCheckboxes(days){
+  const selected=new Set(days);
+  document.querySelectorAll("#daysBox input").forEach(inp=>{
+    inp.checked=selected.has(inp.value);
+    inp.parentElement.classList.toggle("checked", inp.checked);
+  });
+}
+function autoFillDays(){
+  const start=document.getElementById("scheduleStart").value;
+  const end=document.getElementById("scheduleEnd").value || start;
+  setDayCheckboxes(getAutoDays(start,end));
 }
 function setupScheduleForm(){
   document.querySelectorAll("#daysBox input").forEach(inp=>{
     inp.addEventListener("change",()=>inp.parentElement.classList.toggle("checked", inp.checked));
   });
+  document.getElementById("scheduleStart").addEventListener("change",autoFillDays);
+  document.getElementById("scheduleEnd").addEventListener("change",autoFillDays);
+
   document.getElementById("addScheduleBtn").addEventListener("click",()=>{
     const title=document.getElementById("scheduleTitle").value.trim();
     const start=document.getElementById("scheduleStart").value;
     const end=document.getElementById("scheduleEnd").value || start;
-    const days=Array.from(document.querySelectorAll("#daysBox input:checked")).map(x=>x.value);
-    if(!title || !start || !end || !days.length){ alert("予定名、日付、曜日を入力してください。"); return; }
-    state.schedules.push({id:String(Date.now()), icon:document.getElementById("scheduleIcon").value, title, start, end, days, startTime:document.getElementById("scheduleStartTime").value, endTime:document.getElementById("scheduleEndTime").value});
+    let days=Array.from(document.querySelectorAll("#daysBox input:checked")).map(x=>x.value);
+    if(start && days.length===0){
+      days=getAutoDays(start,end);
+      setDayCheckboxes(days);
+    }
+    if(!title || !start || !end || !days.length){ alert("予定名と日付を入力してください。曜日は自動で入ります。"); return; }
+    state.schedules.push({
+      id:String(Date.now()),
+      icon:document.getElementById("scheduleIcon").value,
+      title,
+      start,
+      end,
+      days,
+      startTime:document.getElementById("scheduleStartTime").value,
+      endTime:document.getElementById("scheduleEndTime").value
+    });
+    state.schedules.sort((a,b)=>scheduleSortValue(a).localeCompare(scheduleSortValue(b)));
     ["scheduleTitle","scheduleStart","scheduleEnd","scheduleStartTime","scheduleEndTime"].forEach(id=>document.getElementById(id).value="");
     document.querySelectorAll("#daysBox input").forEach(x=>{x.checked=false; x.parentElement.classList.remove("checked");});
     save(); renderSchedules();
