@@ -1,9 +1,10 @@
 # Summer Adventure
 
-A simple summer adventure journal.
-
-## Version 1.1
-- Parent mode opens by long-pressing the title.
-- Schedule weekdays are auto-filled from start/end dates.
+## Version 1.2 Safe Update
+- Fixes daily date refresh when opened from the home screen.
+- Separates built-in schedules from parent-added schedules.
+- Parent-added schedules are preserved across updates.
 - Schedule lists are sorted chronologically.
-- Data is saved in the same browser on the same device.
+- Weekdays are auto-filled when adding schedules.
+
+Data is saved in the same browser on the same device.

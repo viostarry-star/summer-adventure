@@ -217,7 +217,7 @@ button.ghost{background:#f4ede1;color:var(--muted);box-shadow:none}
 <div class="screen" id="screen-calendar"><div class="card"><h2>📅 カレンダー</h2><p class="small">登録済みの予定一覧です。</p><div id="allSchedules" class="schedule-list"></div></div></div>
 <div class="screen" id="screen-journal"><div class="card"><h2>📖 Adventure Journal</h2><p class="small">写真やメモを書いた日がここに残ります。</p><div id="journalGrid" class="journal-grid"></div></div></div>
 <div class="screen" id="screen-review"><div class="card"><h2>🌞 夏のふりかえり</h2><div id="reviewStats" class="stat-grid"></div></div></div>
-<div class="screen" id="screen-record"><div class="card"><h2>🏆 記録</h2><p class="small">外部フォントなしのオフライン対応版です。予定・チェック・写真・メモを保存します。</p><button type="button" class="ghost" id="exportBtn">データを書き出し</button><textarea id="exportArea" placeholder="ここに書き出しデータが表示されます"></textarea></div></div>
+<div class="screen" id="screen-record"><div class="card"><h2>🏆 記録</h2><p class="small">外部フォントなしのオフライン対応版です。親モードで追加した予定は更新しても残るように分けて保存します。</p><button type="button" class="ghost" id="exportBtn">データを書き出し</button><textarea id="exportArea" placeholder="ここに書き出しデータが表示されます"></textarea></div></div>
 </div>
 
 <nav class="bottom-nav">
@@ -230,8 +230,8 @@ button.ghost{background:#f4ede1;color:var(--muted);box-shadow:none}
 
 <script>
 (function(){
-const APP_KEY = "summerAdventureStableFinal";
-const OLD_APP_KEYS = ["summerAdventureOfflineOnePointOne","summerAdventureOfflineOne","summerAdventureOnePointThree","summerAdventureOnePointTwo","summerAdventureOne"];
+const APP_KEY = "summerAdventureV1_2Safe";
+const OLD_APP_KEYS = ["summerAdventureStableFinal","summerAdventureOfflineOnePointOne","summerAdventureOfflineOne","summerAdventureOnePointThree","summerAdventureOnePointTwo","summerAdventureOne"];
 const DB_NAME = "summerAdventurePhotos";
 const STORE = "photos";
 const START = new Date(2026,5,29);
@@ -257,6 +257,20 @@ const areaInfo = {
   game:{name:"ゲーム", icons:["⛏️","🏙️","🎲","🎮","🎡"]}
 };
 
+
+const SYSTEM_SCHEDULES = [
+  {id:"sys_ss_2026_0629", icon:"🏫", title:"サマースクール", start:"2026-06-29", end:"2026-07-02", days:["1","2","3","4"], startTime:"09:00", endTime:"15:00"},
+  {id:"sys_ss_2026_0706", icon:"🏫", title:"サマースクール", start:"2026-07-06", end:"2026-07-10", days:["1","2","3","4","5"], startTime:"09:00", endTime:"15:00"},
+  {id:"sys_travel_japan_0715", icon:"✈️", title:"日本への移動", start:"2026-07-15", end:"2026-07-15", days:["3"], startTime:"", endTime:""},
+  {id:"sys_gero_0721", icon:"♨️", title:"下呂温泉旅行", start:"2026-07-21", end:"2026-07-22", days:["2","3"], startTime:"", endTime:""},
+  {id:"sys_odawara_0725", icon:"🚗", title:"由一郎くん家族と小田原旅行", start:"2026-07-25", end:"2026-07-26", days:["6","0"], startTime:"", endTime:""},
+  {id:"sys_tokyo_0730", icon:"🏨", title:"東京宿泊", start:"2026-07-30", end:"2026-07-30", days:["4"], startTime:"", endTime:""},
+  {id:"sys_travel_us_0731", icon:"✈️", title:"日本からアメリカへ移動", start:"2026-07-31", end:"2026-07-31", days:["5"], startTime:"", endTime:""},
+  {id:"sys_ss_2026_0810", icon:"🏫", title:"サマースクール", start:"2026-08-10", end:"2026-08-14", days:["1","2","3","4","5"], startTime:"09:00", endTime:"15:00"},
+  {id:"sys_basket_2026_0817", icon:"🏀", title:"バスケットボール サマースクール", start:"2026-08-17", end:"2026-08-21", days:["1","2","3","4","5"], startTime:"09:00", endTime:"13:00"}
+];
+const LEGACY_SYSTEM_IDS = new Set(["ss_2026_0629","ss_2026_0706","travel_japan_0715","gero_0721","odawara_0725","tokyo_0730","travel_us_0731","ss_2026_0810","basket_2026_0817","default_summer_school_2026"]);
+
 let db = null;
 let state = JSON.parse(localStorage.getItem(APP_KEY) || "null");
 if(!state){
@@ -271,26 +285,16 @@ if(!state.city) state.city = {points:0, buildings:0};
 if(!state.city.areaCounts) state.city.areaCounts = {learning:0, creative:0, science:0, outdoor:0, game:0};
 if(!state.schedules) state.schedules = [];
 if(!state.days[keyDate]) state.days[keyDate] = {};
+if(!state.userSchedules){
+  const existing = Array.isArray(state.schedules) ? state.schedules : [];
+  state.userSchedules = existing.filter(s => s && s.id && !LEGACY_SYSTEM_IDS.has(s.id) && !String(s.id).startsWith("sys_"));
+}
+state.schedules = state.userSchedules;
+state.dataVersion = "1.2-safe";
+save();
 
 function save(){ localStorage.setItem(APP_KEY, JSON.stringify(state)); }
-function addDefaults(){
-  if(state.hasStableDefaults) return;
-  const ids = new Set(state.schedules.map(s=>s.id));
-  const defaults = [
-    {id:"ss_2026_0629", icon:"🏫", title:"サマースクール", start:"2026-06-29", end:"2026-07-02", days:["1","2","3","4"], startTime:"09:00", endTime:"15:00"},
-    {id:"ss_2026_0706", icon:"🏫", title:"サマースクール", start:"2026-07-06", end:"2026-07-10", days:["1","2","3","4","5"], startTime:"09:00", endTime:"15:00"},
-    {id:"travel_japan_0715", icon:"✈️", title:"日本への移動", start:"2026-07-15", end:"2026-07-15", days:["3"], startTime:"", endTime:""},
-    {id:"gero_0721", icon:"♨️", title:"下呂温泉旅行", start:"2026-07-21", end:"2026-07-22", days:["2","3"], startTime:"", endTime:""},
-    {id:"odawara_0725", icon:"🚗", title:"由一郎くん家族と小田原旅行", start:"2026-07-25", end:"2026-07-26", days:["6","0"], startTime:"", endTime:""},
-    {id:"tokyo_0730", icon:"🏨", title:"東京宿泊", start:"2026-07-30", end:"2026-07-30", days:["4"], startTime:"", endTime:""},
-    {id:"travel_us_0731", icon:"✈️", title:"日本からアメリカへ移動", start:"2026-07-31", end:"2026-07-31", days:["5"], startTime:"", endTime:""},
-    {id:"ss_2026_0810", icon:"🏫", title:"サマースクール", start:"2026-08-10", end:"2026-08-14", days:["1","2","3","4","5"], startTime:"09:00", endTime:"15:00"},
-    {id:"basket_2026_0817", icon:"🏀", title:"バスケットボール サマースクール", start:"2026-08-17", end:"2026-08-21", days:["1","2","3","4","5"], startTime:"09:00", endTime:"13:00"}
-  ];
-  defaults.forEach(s=>{ if(!ids.has(s.id)) state.schedules.push(s); });
-  state.hasStableDefaults = true;
-  save();
-}
+function addDefaults(){}
 
 function openDB(){
   return new Promise(resolve=>{
@@ -376,18 +380,19 @@ function scheduleRow(s){
   const row=document.createElement("div");
   row.className="schedule-item";
   const days=["日","月","火","水","木","金","土"];
-  row.innerHTML=`<div class="schedule-icon">${s.icon}</div><div><div class="schedule-title">${s.title}</div><div class="schedule-time">${timeLabel(s.startTime,s.endTime)}<br>${s.start}〜${s.end} / ${(s.days||[]).map(x=>days[Number(x)]).join("・")}</div></div><button class="delete-btn" data-id="${s.id}">削除</button>`;
+  row.innerHTML=`<div class="schedule-icon">${s.icon}</div><div><div class="schedule-title">${s.title}</div><div class="schedule-time">${timeLabel(s.startTime,s.endTime)}<br>${s.start}〜${s.end} / ${(s.days||[]).map(x=>days[Number(x)]).join("・")}</div></div>${String(s.id).startsWith("sys_") ? "" : `<button class="delete-btn" data-id="${s.id}">削除</button>`}`;
   const btn=row.querySelector(".delete-btn");
-  btn.addEventListener("click",()=>{ state.schedules=state.schedules.filter(x=>x.id!==s.id); save(); renderSchedules(); });
+  if(btn) btn.addEventListener("click",()=>{ state.userSchedules=(state.userSchedules||[]).filter(x=>x.id!==s.id); state.schedules=state.userSchedules; save(); renderSchedules(); });
   return row;
 }
+function getAllSchedules(){ return [...SYSTEM_SCHEDULES, ...(state.userSchedules || [])]; }
 function scheduleSortValue(s){
   const time = s.startTime || "99:99";
   return `${s.start || "9999-99-99"} ${time}`;
 }
 function renderSchedules(){
   const list=document.getElementById("todaySchedules");
-  const todays=state.schedules.filter(scheduleApplies).sort((a,b)=>{
+  const todays=getAllSchedules().filter(scheduleApplies).sort((a,b)=>{
     const at=a.startTime || "99:99";
     const bt=b.startTime || "99:99";
     return at.localeCompare(bt) || (a.title||"").localeCompare(b.title||"");
@@ -398,7 +403,7 @@ function renderSchedules(){
 
   const all=document.getElementById("allSchedules");
   all.innerHTML="";
-  const sorted=[...state.schedules].sort((a,b)=>scheduleSortValue(a).localeCompare(scheduleSortValue(b)));
+  const sorted=[...getAllSchedules()].sort((a,b)=>scheduleSortValue(a).localeCompare(scheduleSortValue(b)));
   if(!sorted.length) all.innerHTML='<div class="small">登録済みの固定予定はまだありません。</div>';
   else sorted.forEach(s=>all.appendChild(scheduleRow(s)));
 }
@@ -434,7 +439,6 @@ function setupScheduleForm(){
   });
   document.getElementById("scheduleStart").addEventListener("change",autoFillDays);
   document.getElementById("scheduleEnd").addEventListener("change",autoFillDays);
-
   document.getElementById("addScheduleBtn").addEventListener("click",()=>{
     const title=document.getElementById("scheduleTitle").value.trim();
     const start=document.getElementById("scheduleStart").value;
@@ -445,7 +449,8 @@ function setupScheduleForm(){
       setDayCheckboxes(days);
     }
     if(!title || !start || !end || !days.length){ alert("予定名と日付を入力してください。曜日は自動で入ります。"); return; }
-    state.schedules.push({
+    if(!state.userSchedules) state.userSchedules=[];
+    state.userSchedules.push({
       id:String(Date.now()),
       icon:document.getElementById("scheduleIcon").value,
       title,
@@ -455,7 +460,8 @@ function setupScheduleForm(){
       startTime:document.getElementById("scheduleStartTime").value,
       endTime:document.getElementById("scheduleEndTime").value
     });
-    state.schedules.sort((a,b)=>scheduleSortValue(a).localeCompare(scheduleSortValue(b)));
+    state.userSchedules.sort((a,b)=>scheduleSortValue(a).localeCompare(scheduleSortValue(b)));
+    state.schedules=state.userSchedules;
     ["scheduleTitle","scheduleStart","scheduleEnd","scheduleStartTime","scheduleEndTime"].forEach(id=>document.getElementById(id).value="");
     document.querySelectorAll("#daysBox input").forEach(x=>{x.checked=false; x.parentElement.classList.remove("checked");});
     save(); renderSchedules();
@@ -527,8 +533,23 @@ function setupParentMode(){
 function setupExport(){
   document.getElementById("exportBtn").addEventListener("click",()=>{ document.getElementById("exportArea").value=JSON.stringify(state,null,2); });
 }
+
+function currentDateKey(){
+  const d = new Date();
+  return d.toISOString().slice(0,10);
+}
+function refreshIfDateChanged(){
+  if(currentDateKey() !== keyDate){
+    location.reload();
+  }
+}
+window.addEventListener("pageshow", refreshIfDateChanged);
+document.addEventListener("visibilitychange", ()=>{ if(!document.hidden) refreshIfDateChanged(); });
+window.addEventListener("focus", refreshIfDateChanged);
+setInterval(refreshIfDateChanged, 60000);
+
 async function init(){
-  addDefaults(); dateSetup(); packetSetup(); setupTasks(); setupScheduleForm(); setupNav(); setupParentMode(); setupExport();
+  dateSetup(); packetSetup(); setupTasks(); setupScheduleForm(); setupNav(); setupParentMode(); setupExport();
   await openDB(); setupPhoto(); renderSchedules(); renderReview(); await loadTodayPhoto(); await renderJournal(); save();
 }
 init();
