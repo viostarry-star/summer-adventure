@@ -26,22 +26,23 @@ body{
     linear-gradient(180deg,#fffaf0 0%,#f7f0e2 44%,#eaf6f7 100%);
   min-height:100vh;
 }
-.app{max-width:540px;margin:0 auto;padding:14px 14px 96px}
+.app{max-width:560px;margin:0 auto;padding:14px 14px 96px}
 .hero{
-  position:relative;overflow:hidden;background:rgba(255,253,246,.86);
+  position:relative;overflow:hidden;background:rgba(255,253,246,.88);
   border:1px solid rgba(234,220,199,.95);border-radius:30px;
-  padding:32px 18px 18px;box-shadow:0 18px 45px rgba(91,77,58,.12);min-height:220px;
+  padding:34px 18px 18px;box-shadow:0 18px 45px rgba(91,77,58,.12);min-height:220px;
 }
 .hero:before{content:"☀️";position:absolute;left:18px;top:16px;font-size:46px}
 .hero:after{content:"🌴 🐚";position:absolute;right:12px;top:22px;font-size:38px;transform:rotate(4deg)}
-.title{text-align:center;padding-top:28px;cursor:pointer;user-select:none}
+.title{text-align:center;padding-top:28px;user-select:none}
 .title h1{margin:0;font-family:Georgia,"Times New Roman",serif;font-size:42px;line-height:1.05;font-weight:400;letter-spacing:.035em}
 .title .tagline{margin-top:14px;color:var(--muted);font-weight:700}
-.daily-message{margin:12px auto 0;display:inline-block;background:rgba(255,255,255,.7);border:1px solid var(--line);border-radius:999px;padding:8px 14px;font-size:13px}
+.daily-message{margin:12px auto 0;display:inline-block;background:rgba(255,255,255,.72);border:1px solid var(--line);border-radius:999px;padding:8px 14px;font-size:13px}
 .clouds{position:absolute;left:18px;right:18px;bottom:12px;display:flex;justify-content:space-between;opacity:.85;font-size:28px}
+.screen{display:none}.screen.active{display:block}
 .top-grid{display:grid;grid-template-columns:1fr 1.45fr;gap:12px;margin-top:14px}
 .mini-card,.card,details{
-  background:rgba(255,253,246,.93);border:1px solid var(--line);border-radius:24px;
+  background:rgba(255,253,246,.94);border:1px solid var(--line);border-radius:24px;
   box-shadow:0 12px 30px rgba(91,77,58,.09)
 }
 .mini-card{padding:14px;min-height:120px}
@@ -51,10 +52,10 @@ body{
 .date-card .weekday{font-size:18px;font-weight:700}
 .today-card{padding:18px;display:flex;flex-direction:column;justify-content:center}
 .today-card .card-title{font-family:Georgia,"Times New Roman",serif;font-size:25px}
+.card{padding:16px;margin:12px 0}.card h2{margin:0 0 12px;font-size:20px}
 .small{font-size:13px;color:var(--muted);line-height:1.55}
 .section-title{text-align:center;margin:24px 0 12px;font-size:26px;font-weight:700;letter-spacing:.05em}
 .section-title:before{content:"🐚 ";font-size:22px}.section-title:after{content:" 🪶";font-size:22px}
-.card{padding:16px;margin:12px 0}.card h2{margin:0 0 12px;font-size:20px}
 .task{display:flex;align-items:center;gap:10px;padding:10px 8px;border-radius:16px;margin:4px 0;background:rgba(255,255,255,.78)}
 .task input{margin-left:auto;order:2;width:24px;height:24px;accent-color:var(--sage-deep)}
 .task span{order:1;flex:1}.task.done{background:#edf6e9;color:#60745b}.task.done span{text-decoration:line-through;text-decoration-thickness:2px;text-decoration-color:rgba(127,155,122,.45)}
@@ -75,41 +76,19 @@ button{font-family:inherit;border:0;border-radius:999px;background:var(--coral);
 button.secondary{background:var(--sage-deep)}
 button.ghost{background:#f4ede1;color:var(--muted);box-shadow:none}
 .delete-btn{background:#f4ede1;color:var(--muted);box-shadow:none;padding:8px 10px}
-.parent-panel{display:none;margin-top:12px;border:1px dashed #d4c2a6;background:rgba(255,255,255,.64);border-radius:22px;padding:12px}
-.parent-panel.open{display:block}
-.parent-hint{text-align:center;font-size:12px;color:var(--muted);margin-top:8px}
-.status-row{display:grid;grid-template-columns:1fr 110px;gap:12px;align-items:center;margin:12px 0}
-.notice{background:linear-gradient(135deg,#fff7df,#fffdf6);border:1px solid var(--line);border-radius:22px;padding:14px;text-align:center;font-weight:700}
-.points{background:white;border:1px solid var(--line);border-radius:22px;padding:14px;text-align:center}.points .num{font-family:Georgia,"Times New Roman",serif;font-size:38px;line-height:1}
-.city{margin-top:18px;background:linear-gradient(180deg,#dff1fb 0%,#ecf7ff 48%,#dbecd2 49%,#c8e3ba 100%);border:1px solid #cde2d2;border-radius:28px;overflow:hidden;box-shadow:0 12px 26px rgba(91,77,58,.1)}
-.city-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 6px}.city-title{font-size:24px;font-weight:700}
-.progress-wrap{background:rgba(255,255,255,.85);margin:0 16px 10px;padding:12px;border-radius:18px}.progressbar{height:10px;background:#eadfcd;border-radius:99px;overflow:hidden}.progressbar span{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--sage-deep),var(--coral));border-radius:99px}
-.city-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;padding:6px 10px 16px;align-items:stretch}
-.area-card{min-height:86px;background:rgba(255,255,255,.68);border:1px solid rgba(255,255,255,.9);border-radius:18px;padding:7px;display:flex;flex-direction:column;justify-content:space-between}
-.area-name{font-size:11px;font-weight:700;color:var(--muted)}
-.area-icons{font-size:25px;line-height:1.1;text-align:center;min-height:48px;display:flex;align-items:center;justify-content:center;flex-wrap:wrap}
-.area-count{font-size:11px;text-align:center;color:var(--muted)}
-.area-card.grow{animation:pop .28s ease}@keyframes pop{0%{transform:scale(.7)}70%{transform:scale(1.12)}100%{transform:scale(1)}}
 .photo-box{border:1.5px dashed #d4c2a6;border-radius:22px;background:rgba(255,255,255,.78);padding:14px;text-align:center}
 .photo-preview{width:100%;max-height:330px;object-fit:cover;border-radius:18px;display:none;margin:10px 0;border:1px solid var(--line)}
 .photo-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:10px}
 .hidden-input{display:none}
 .memo-row{display:grid;gap:8px;margin-top:12px}
-
 .journal-list{display:grid;gap:12px}
 .journal-entry{background:white;border:1px solid var(--line);border-radius:20px;padding:12px}
 .journal-entry img{width:100%;max-height:260px;object-fit:cover;border-radius:16px;margin:8px 0;border:1px solid var(--line)}
 .journal-entry-date{font-weight:700;color:var(--ink);font-size:16px}
 .journal-entry-tasks{font-size:13px;color:var(--muted);line-height:1.6}
 .journal-entry-memo{background:#fffaf0;border:1px solid var(--line);border-radius:14px;padding:10px;margin-top:8px;font-size:14px;line-height:1.6}
-
-.journal-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.journal-cell{background:white;border:1px solid var(--line);border-radius:16px;min-height:92px;padding:8px;overflow:hidden}
-.journal-cell img{width:100%;height:64px;object-fit:cover;border-radius:12px}
-.journal-date{font-weight:700;font-size:12px;color:var(--muted)}
 .stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
 .stat{background:white;border:1px solid var(--line);border-radius:16px;padding:12px;text-align:center}.stat strong{font-size:24px}
-.screen{display:none}.screen.active{display:block}
 .bottom-nav{position:fixed;left:50%;bottom:12px;transform:translateX(-50%);width:min(520px,calc(100% - 24px));background:rgba(255,253,246,.94);backdrop-filter:blur(12px);border:1px solid var(--line);box-shadow:0 14px 38px rgba(91,77,58,.16);border-radius:24px;display:grid;grid-template-columns:repeat(5,1fr);padding:8px;z-index:20}
 .nav-item{text-align:center;font-size:11px;color:var(--muted);font-weight:700;border:0;background:transparent;box-shadow:none;padding:4px 0}.nav-item .ico{display:block;font-size:23px}.nav-item.active{color:var(--blue);background:#eef8ff;border-radius:18px}
 @media (min-width:760px){.app{max-width:980px}.category-grid{grid-template-columns:repeat(2,1fr)}.top-grid{grid-template-columns:150px 1fr}}
@@ -118,7 +97,7 @@ button.ghost{background:#f4ede1;color:var(--muted);box-shadow:none}
 <body>
 <div class="app">
 <section class="hero">
-  <div class="title" id="heroTitle">
+  <div class="title">
     <h1>Summer Adventure</h1>
     <div class="tagline">毎日を冒険にしよう！</div>
     <div class="daily-message" id="dailyMessage">🌿 今日は何を見つけよう？</div>
@@ -142,24 +121,28 @@ button.ghost{background:#f4ede1;color:var(--muted);box-shadow:none}
   <div class="card">
     <h2>今日の予定</h2>
     <div id="todaySchedules" class="schedule-list"></div>
-    <div class="parent-hint">予定の追加は「Summer Adventure」を長押しして親モードからできます</div>
-    <div id="parentPanel" class="parent-panel">
-      <strong>⚙️ 親モード：予定を追加</strong>
-      <div class="small">日付を入れると曜日は自動で入ります。時間も必要に応じて入力できます。</div>
+    <details>
+      <summary>予定を追加</summary>
       <div class="schedule-form">
         <select id="scheduleIcon">
-          <option>🏫</option><option>🤖</option><option>🎨</option><option>🏊</option><option>🧘</option><option>🏛️</option><option>🎂</option><option>🚗</option><option>✈️</option><option>♨️</option><option>🏨</option><option>🏀</option>
+          <option>⭐</option><option>🏫</option><option>🤖</option><option>🎨</option><option>🏊</option><option>🏛️</option><option>🎂</option><option>🚗</option><option>✈️</option><option>♨️</option><option>🏨</option><option>🏀</option>
         </select>
-        <input id="scheduleTitle" placeholder="予定名 例：サマースクール">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input id="scheduleStart" type="date"><input id="scheduleEnd" type="date"></div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input id="scheduleStartTime" type="time"><input id="scheduleEndTime" type="time"></div>
+        <input id="scheduleTitle" placeholder="予定名 例：図書館へ行く">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <input id="scheduleStart" type="date">
+          <input id="scheduleEnd" type="date">
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <input id="scheduleStartTime" type="time">
+          <input id="scheduleEndTime" type="time">
+        </div>
         <div class="days" id="daysBox">
           <label><input type="checkbox" value="1">月</label><label><input type="checkbox" value="2">火</label><label><input type="checkbox" value="3">水</label><label><input type="checkbox" value="4">木</label><label><input type="checkbox" value="5">金</label><label><input type="checkbox" value="6">土</label><label><input type="checkbox" value="0">日</label>
         </div>
-        <div class="small">曜日は自動入力されます。必要なら手動で調整できます。</div>
+        <div class="small">日付を入れると曜日は自動で入ります。時間も入れられます。</div>
         <button type="button" id="addScheduleBtn">予定を追加</button>
       </div>
-    </div>
+    </details>
   </div>
 
   <div class="section-title">今日は何した？</div>
@@ -219,13 +202,12 @@ button.ghost{background:#f4ede1;color:var(--muted);box-shadow:none}
       <p class="small">写真とメモは、この端末の同じブラウザ内に日付ごとに保存されます。</p>
     </div>
   </div>
-
 </div>
 
 <div class="screen" id="screen-calendar"><div class="card"><h2>📅 カレンダー</h2><p class="small">登録済みの予定一覧です。</p><div id="allSchedules" class="schedule-list"></div></div></div>
 <div class="screen" id="screen-journal"><div class="card"><h2>📖 Adventure Journal</h2><p class="small">写真やメモを書いた日がここに残ります。</p><div id="journalGrid" class="journal-list"></div></div></div>
 <div class="screen" id="screen-review"><div class="card"><h2>🌞 夏のふりかえり</h2><div id="reviewStats" class="stat-grid"></div></div></div>
-<div class="screen" id="screen-record"><div class="card"><h2>🏆 記録</h2><p class="small">外部フォントなしのオフライン対応版です。親モードで追加した予定は更新しても残るように分けて保存します。日付更新・ふりかえり集計・日付ずれ・日記表示を修正済みです。</p><button type="button" class="ghost" id="exportBtn">データを書き出し</button><textarea id="exportArea" placeholder="ここに書き出しデータが表示されます"></textarea></div></div>
+<div class="screen" id="screen-record"><div class="card"><h2>🏆 記録</h2><p class="small">Version 2.0。予定追加は親モードなしで使えます。旧データが同じ保存場所にあれば自動で引き継ぎます。</p><button type="button" class="ghost" id="exportBtn">データを書き出し</button><textarea id="exportArea" placeholder="ここに書き出しデータが表示されます"></textarea></div></div>
 </div>
 
 <nav class="bottom-nav">
@@ -238,13 +220,17 @@ button.ghost{background:#f4ede1;color:var(--muted);box-shadow:none}
 
 <script>
 (function(){
-const APP_KEY = "summerAdventureV1_2Safe";
-const OLD_APP_KEYS = ["summerAdventureStableFinal","summerAdventureOfflineOnePointOne","summerAdventureOfflineOne","summerAdventureOnePointThree","summerAdventureOnePointTwo","summerAdventureOne"];
+const APP_KEY = "summerAdventureV2";
+const OLD_APP_KEYS = [
+  "summerAdventureV1_2Safe","summerAdventureStableFinal","summerAdventureOfflineOnePointOne",
+  "summerAdventureOfflineOne","summerAdventureOnePointThree","summerAdventureOnePointTwo","summerAdventureOne"
+];
 const DB_NAME = "summerAdventurePhotos";
 const STORE = "photos";
 const START = new Date(2026,5,29);
 const MAX_DAYS = 50;
 const today = new Date();
+
 function localDateKey(date = new Date()){
   const y = date.getFullYear();
   const m = String(date.getMonth()+1).padStart(2,"0");
@@ -258,20 +244,6 @@ const taskLabels = {
   drawing:"お絵かき", craft:"工作", lego:"LEGO", science:"実験", observation:"観察", outdoor:"外遊び",
   scooter:"スクーター", swimming:"プール", minecraft:"Minecraft", cities:"Cities: Skylines", analog:"アナログゲーム"
 };
-const taskAreas = {
-  summer_packet:"learning", piano:"creative", reading:"learning", kanji:"learning", challenge_touch:"learning",
-  drawing:"creative", craft:"creative", lego:"creative", science:"science", observation:"science",
-  outdoor:"outdoor", scooter:"outdoor", swimming:"outdoor", minecraft:"game", cities:"game", analog:"game"
-};
-const areaInfo = {
-  learning:{name:"学び", icons:["📚","🏫","📝","📖","🌟"]},
-  creative:{name:"アート", icons:["🎨","🖼️","🧱","✂️","🏡"]},
-  science:{name:"科学", icons:["🔬","🧪","🔭","🌱","🏛️"]},
-  outdoor:{name:"自然", icons:["🌳","🌻","🏊","🛴","⛲"]},
-  game:{name:"ゲーム", icons:["⛏️","🏙️","🎲","🎮","🎡"]}
-};
-
-
 const SYSTEM_SCHEDULES = [
   {id:"sys_ss_2026_0629", icon:"🏫", title:"サマースクール", start:"2026-06-29", end:"2026-07-02", days:["1","2","3","4"], startTime:"09:00", endTime:"15:00"},
   {id:"sys_ss_2026_0706", icon:"🏫", title:"サマースクール", start:"2026-07-06", end:"2026-07-10", days:["1","2","3","4","5"], startTime:"09:00", endTime:"15:00"},
@@ -295,20 +267,29 @@ if(!state){
 }
 if(!state) state = {};
 if(!state.days) state.days = {};
-if(!state.city) state.city = {points:0, buildings:0};
-if(!state.city.areaCounts) state.city.areaCounts = {learning:0, creative:0, science:0, outdoor:0, game:0};
-if(!state.schedules) state.schedules = [];
-if(!state.days[keyDate]) state.days[keyDate] = {};
 if(!state.userSchedules){
   const existing = Array.isArray(state.schedules) ? state.schedules : [];
   state.userSchedules = existing.filter(s => s && s.id && !LEGACY_SYSTEM_IDS.has(s.id) && !String(s.id).startsWith("sys_"));
 }
 state.schedules = state.userSchedules;
-state.dataVersion = "1.2-safe";
-save();
-
+if(!state.days[keyDate]) state.days[keyDate] = {};
+state.dataVersion = "2.0";
 function save(){ localStorage.setItem(APP_KEY, JSON.stringify(state)); }
-function addDefaults(){}
+
+function currentDateKey(){ return localDateKey(new Date()); }
+function refreshIfDateChanged(){
+  const nowKey = currentDateKey();
+  if(nowKey !== keyDate){
+    const base = location.origin + location.pathname;
+    location.replace(base + "?date=" + nowKey + "&refresh=" + Date.now());
+  }
+}
+function installDateRefreshGuards(){
+  ["pageshow","focus","resume"].forEach(eventName=>window.addEventListener(eventName, refreshIfDateChanged));
+  document.addEventListener("visibilitychange", ()=>{ if(!document.hidden) refreshIfDateChanged(); });
+  ["pointerdown","touchstart","click"].forEach(eventName=>document.addEventListener(eventName, refreshIfDateChanged, {capture:true, passive:true}));
+  setInterval(refreshIfDateChanged, 15000);
+}
 
 function openDB(){
   return new Promise(resolve=>{
@@ -350,14 +331,8 @@ function packetSetup(){
   const isWeekend = today.getDay() === 0 || today.getDay() === 6;
   const idx = weekdayIndexFromStart(today);
   const packetTask = document.getElementById("packetTask");
-  if(isWeekend){
-    document.getElementById("packetStatus").textContent = "今日は週末なので、Summer Packetは表示しません。";
-    packetTask.style.display = "none"; return;
-  }
-  if(idx === 0){
-    document.getElementById("packetStatus").textContent = "Summer Packetは 2026年6月29日（月）から始まります。";
-    packetTask.style.display = "none"; return;
-  }
+  if(isWeekend){ document.getElementById("packetStatus").textContent = "今日は週末なので、Summer Packetは表示しません。"; packetTask.style.display = "none"; return; }
+  if(idx === 0){ document.getElementById("packetStatus").textContent = "Summer Packetは 2026年6月29日（月）から始まります。"; packetTask.style.display = "none"; return; }
   const week = Math.ceil(idx/5);
   const day = ((idx-1)%5)+1;
   document.getElementById("packetLabel").textContent = `(Week ${week} Day ${day})`;
@@ -380,13 +355,15 @@ function setupTasks(){
     });
   });
 }
-function dateOnly(d){ return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
 function parseDate(str){ const parts=str.split("-").map(Number); return new Date(parts[0],parts[1]-1,parts[2]); }
+function dateOnly(d){ return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
 function timeLabel(start,end){
   if(!start && !end) return "";
   const f=t=>{ if(!t) return ""; const parts=t.split(":").map(Number); const h=parts[0], m=parts[1]; const suffix=h>=12?"PM":"AM"; const hh=h%12||12; return `${hh}:${String(m).padStart(2,"0")} ${suffix}`; };
   return `${f(start)}${end ? " – " + f(end) : ""}`;
 }
+function getAllSchedules(){ return [...SYSTEM_SCHEDULES, ...(state.userSchedules || [])]; }
+function scheduleSortValue(s){ const time = s.startTime || "99:99"; return `${s.start || "9999-99-99"} ${time}`; }
 function scheduleApplies(s){
   if(!s.start || !s.end) return false;
   const t=dateOnly(today), start=parseDate(s.start), end=parseDate(s.end);
@@ -402,25 +379,15 @@ function scheduleRow(s){
   if(btn) btn.addEventListener("click",()=>{ state.userSchedules=(state.userSchedules||[]).filter(x=>x.id!==s.id); state.schedules=state.userSchedules; save(); renderSchedules(); });
   return row;
 }
-function getAllSchedules(){ return [...SYSTEM_SCHEDULES, ...(state.userSchedules || [])]; }
-function scheduleSortValue(s){
-  const time = s.startTime || "99:99";
-  return `${s.start || "9999-99-99"} ${time}`;
-}
 function renderSchedules(){
   const list=document.getElementById("todaySchedules");
-  const todays=getAllSchedules().filter(scheduleApplies).sort((a,b)=>{
-    const at=a.startTime || "99:99";
-    const bt=b.startTime || "99:99";
-    return at.localeCompare(bt) || (a.title||"").localeCompare(b.title||"");
-  });
+  const todays=getAllSchedules().filter(scheduleApplies).sort((a,b)=>(a.startTime||"99:99").localeCompare(b.startTime||"99:99"));
   list.innerHTML="";
   if(!todays.length) list.innerHTML='<div class="small">今日の固定予定はまだありません。</div>';
   else todays.forEach(s=>list.appendChild(scheduleRow(s)));
-
   const all=document.getElementById("allSchedules");
-  all.innerHTML="";
   const sorted=[...getAllSchedules()].sort((a,b)=>scheduleSortValue(a).localeCompare(scheduleSortValue(b)));
+  all.innerHTML="";
   if(!sorted.length) all.innerHTML='<div class="small">登録済みの固定予定はまだありません。</div>';
   else sorted.forEach(s=>all.appendChild(scheduleRow(s)));
 }
@@ -432,10 +399,7 @@ function getAutoDays(startStr,endStr){
   const days=new Set();
   const cur=new Date(start);
   const final=end < start ? start : end;
-  while(cur <= final){
-    days.add(String(cur.getDay()));
-    cur.setDate(cur.getDate()+1);
-  }
+  while(cur <= final){ days.add(String(cur.getDay())); cur.setDate(cur.getDate()+1); }
   return Array.from(days).sort((a,b)=>Number(a)-Number(b));
 }
 function setDayCheckboxes(days){
@@ -451,9 +415,7 @@ function autoFillDays(){
   setDayCheckboxes(getAutoDays(start,end));
 }
 function setupScheduleForm(){
-  document.querySelectorAll("#daysBox input").forEach(inp=>{
-    inp.addEventListener("change",()=>inp.parentElement.classList.toggle("checked", inp.checked));
-  });
+  document.querySelectorAll("#daysBox input").forEach(inp=>inp.addEventListener("change",()=>inp.parentElement.classList.toggle("checked", inp.checked)));
   document.getElementById("scheduleStart").addEventListener("change",autoFillDays);
   document.getElementById("scheduleEnd").addEventListener("change",autoFillDays);
   document.getElementById("addScheduleBtn").addEventListener("click",()=>{
@@ -461,22 +423,9 @@ function setupScheduleForm(){
     const start=document.getElementById("scheduleStart").value;
     const end=document.getElementById("scheduleEnd").value || start;
     let days=Array.from(document.querySelectorAll("#daysBox input:checked")).map(x=>x.value);
-    if(start && days.length===0){
-      days=getAutoDays(start,end);
-      setDayCheckboxes(days);
-    }
+    if(start && days.length===0){ days=getAutoDays(start,end); setDayCheckboxes(days); }
     if(!title || !start || !end || !days.length){ alert("予定名と日付を入力してください。曜日は自動で入ります。"); return; }
-    if(!state.userSchedules) state.userSchedules=[];
-    state.userSchedules.push({
-      id:String(Date.now()),
-      icon:document.getElementById("scheduleIcon").value,
-      title,
-      start,
-      end,
-      days,
-      startTime:document.getElementById("scheduleStartTime").value,
-      endTime:document.getElementById("scheduleEndTime").value
-    });
+    state.userSchedules.push({id:String(Date.now()), icon:document.getElementById("scheduleIcon").value, title, start, end, days, startTime:document.getElementById("scheduleStartTime").value, endTime:document.getElementById("scheduleEndTime").value});
     state.userSchedules.sort((a,b)=>scheduleSortValue(a).localeCompare(scheduleSortValue(b)));
     state.schedules=state.userSchedules;
     ["scheduleTitle","scheduleStart","scheduleEnd","scheduleStartTime","scheduleEndTime"].forEach(id=>document.getElementById(id).value="");
@@ -484,7 +433,6 @@ function setupScheduleForm(){
     save(); renderSchedules();
   });
 }
-function renderCity(){}
 async function loadTodayPhoto(){
   const img=document.getElementById("photoPreview");
   const data=await photoGet(keyDate);
@@ -501,46 +449,31 @@ function setupPhoto(){
   });
   document.getElementById("removePhotoBtn").addEventListener("click",async()=>{ await photoDelete(keyDate); if(!state.days[keyDate]) state.days[keyDate]={}; state.days[keyDate].hasPhoto=false; state.days[keyDate].updatedAt=new Date().toISOString(); save(); await loadTodayPhoto(); await renderJournal(); renderReview(); });
   document.getElementById("memoInput").value=state.days[keyDate].memo || "";
-  document.getElementById("saveMemoBtn").addEventListener("click",()=>{ state.days[keyDate].memo=document.getElementById("memoInput").value.trim(); state.days[keyDate].updatedAt=new Date().toISOString(); save(); renderJournal(); renderReview(); });
+  document.getElementById("saveMemoBtn").addEventListener("click",()=>{ if(!state.days[keyDate]) state.days[keyDate]={}; state.days[keyDate].memo=document.getElementById("memoInput").value.trim(); state.days[keyDate].updatedAt=new Date().toISOString(); save(); renderJournal(); renderReview(); });
 }
 async function renderJournal(){
   const grid=document.getElementById("journalGrid");
   grid.innerHTML="";
   const dates=Object.keys(state.days || {}).sort().reverse();
-
   const visibleDates=[];
   for(const date of dates){
     const day=state.days[date] || {};
+    const photo=await photoGet(date);
+    if(photo && !day.hasPhoto){ day.hasPhoto=true; save(); }
     const hasTask=Object.entries(day).some(([k,v])=>v===true && taskLabels[k]);
     const hasMemo=!!day.memo;
-    const hasPhotoFlag=!!day.hasPhoto;
-    if(hasTask || hasMemo || hasPhotoFlag || date===keyDate){
-      visibleDates.push(date);
-    }
+    if(hasTask || hasMemo || photo || day.hasPhoto || date===keyDate) visibleDates.push(date);
   }
-
-  if(!visibleDates.length){
-    grid.innerHTML='<div class="small">まだ日記がありません。チェック、写真、メモを入れるとここに残ります。</div>';
-    return;
-  }
-
-  for(const date of visibleDates.slice(0,60)){
+  if(!visibleDates.length){ grid.innerHTML='<div class="small">まだ日記がありません。チェック、写真、メモを入れるとここに残ります。</div>'; return; }
+  for(const date of visibleDates.slice(0,80)){
     const day=state.days[date] || {};
     const photo=await photoGet(date);
-    if(photo && !day.hasPhoto){
-      day.hasPhoto=true;
-      save();
-    }
     const done=Object.entries(day).filter(([k,v])=>v===true && taskLabels[k]).map(([k])=>taskLabels[k]);
     const entry=document.createElement("div");
     entry.className="journal-entry";
     const formatted=date.slice(5).replace("-","/");
-    entry.innerHTML=`
-      <div class="journal-entry-date">📖 ${formatted}</div>
-      ${photo ? `<img src="${photo}" alt="${formatted}の写真">` : ""}
-      <div class="journal-entry-tasks">${done.length ? "✅ " + done.join("・") : "チェック記録はまだありません"}</div>
-      ${day.memo ? `<div class="journal-entry-memo">${day.memo.replace(/</g,"&lt;").replace(/>/g,"&gt;")}</div>` : ""}
-    `;
+    const memoSafe = day.memo ? String(day.memo).replace(/</g,"&lt;").replace(/>/g,"&gt;") : "";
+    entry.innerHTML=`<div class="journal-entry-date">📖 ${formatted}</div>${photo ? `<img src="${photo}" alt="${formatted}の写真">` : ""}<div class="journal-entry-tasks">${done.length ? "✅ " + done.join("・") : "チェック記録はまだありません"}</div>${memoSafe ? `<div class="journal-entry-memo">${memoSafe}</div>` : ""}`;
     grid.appendChild(entry);
   }
 }
@@ -548,13 +481,11 @@ function renderReview(){
   const counts={};
   let recordedDays=0;
   Object.values(state.days || {}).forEach(day=>{
-    const hasTask = Object.entries(day).some(([k,v])=>v===true && taskLabels[k]);
-    const hasMemo = !!day.memo;
-    const hasPhoto = !!day.hasPhoto;
+    const hasTask=Object.entries(day).some(([k,v])=>v===true && taskLabels[k]);
+    const hasMemo=!!day.memo;
+    const hasPhoto=!!day.hasPhoto;
     if(hasTask || hasMemo || hasPhoto) recordedDays++;
-    Object.entries(day).forEach(([k,v])=>{
-      if(v===true && taskLabels[k]) counts[k]=(counts[k]||0)+1;
-    });
+    Object.entries(day).forEach(([k,v])=>{ if(v===true && taskLabels[k]) counts[k]=(counts[k]||0)+1; });
   });
   const box=document.getElementById("reviewStats");
   box.innerHTML="";
@@ -562,21 +493,9 @@ function renderReview(){
   totalCard.className="stat";
   totalCard.innerHTML=`<div>記録した日</div><strong>${recordedDays}</strong><div class="small">日</div>`;
   box.appendChild(totalCard);
-
   const top=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,7);
-  if(!top.length){
-    const div=document.createElement("div");
-    div.className="stat";
-    div.innerHTML=`<div>活動記録</div><strong>0</strong><div class="small">まだありません</div>`;
-    box.appendChild(div);
-    return;
-  }
-  top.forEach(([k,c])=>{
-    const div=document.createElement("div");
-    div.className="stat";
-    div.innerHTML=`<div>${taskLabels[k]}</div><strong>${c}</strong><div class="small">日</div>`;
-    box.appendChild(div);
-  });
+  if(!top.length){ const div=document.createElement("div"); div.className="stat"; div.innerHTML=`<div>活動記録</div><strong>0</strong><div class="small">まだありません</div>`; box.appendChild(div); return; }
+  top.forEach(([k,c])=>{ const div=document.createElement("div"); div.className="stat"; div.innerHTML=`<div>${taskLabels[k]}</div><strong>${c}</strong><div class="small">日</div>`; box.appendChild(div); });
 }
 function setupNav(){
   document.querySelectorAll(".nav-item").forEach(btn=>{
@@ -589,49 +508,12 @@ function setupNav(){
     });
   });
 }
-function setupParentMode(){
-  const title=document.getElementById("heroTitle");
-  const panel=document.getElementById("parentPanel");
-  let timer=null;
-  const toggle=()=>panel.classList.toggle("open");
-  title.addEventListener("mousedown",()=>{timer=setTimeout(toggle,900);});
-  title.addEventListener("mouseup",()=>clearTimeout(timer));
-  title.addEventListener("mouseleave",()=>clearTimeout(timer));
-  title.addEventListener("touchstart",()=>{timer=setTimeout(toggle,900);},{passive:true});
-  title.addEventListener("touchend",()=>clearTimeout(timer));
-}
 function setupExport(){
   document.getElementById("exportBtn").addEventListener("click",()=>{ document.getElementById("exportArea").value=JSON.stringify(state,null,2); });
 }
-
-
-function currentDateKey(){
-  return localDateKey(new Date());
-}
-function refreshIfDateChanged(){
-  const nowKey = currentDateKey();
-  if(nowKey !== keyDate){
-    const base = location.origin + location.pathname;
-    location.replace(base + "?date=" + nowKey + "&refresh=" + Date.now());
-  }
-}
-function installDateRefreshGuards(){
-  ["pageshow","focus","resume"].forEach(eventName=>{
-    window.addEventListener(eventName, refreshIfDateChanged);
-  });
-  document.addEventListener("visibilitychange", ()=>{
-    if(!document.hidden) refreshIfDateChanged();
-  });
-  ["pointerdown","touchstart","click"].forEach(eventName=>{
-    document.addEventListener(eventName, refreshIfDateChanged, {capture:true, passive:true});
-  });
-  setInterval(refreshIfDateChanged, 15000);
-}
-
-
 async function init(){
   installDateRefreshGuards();
-  dateSetup(); packetSetup(); setupTasks(); setupScheduleForm(); setupNav(); setupParentMode(); setupExport();
+  dateSetup(); packetSetup(); setupTasks(); setupScheduleForm(); setupNav(); setupExport();
   await openDB(); setupPhoto(); renderSchedules(); await loadTodayPhoto(); await renderJournal(); renderReview(); save();
 }
 init();
