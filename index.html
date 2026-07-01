@@ -217,7 +217,7 @@ button.ghost{background:#f4ede1;color:var(--muted);box-shadow:none}
 <div class="screen" id="screen-calendar"><div class="card"><h2>📅 カレンダー</h2><p class="small">登録済みの予定一覧です。</p><div id="allSchedules" class="schedule-list"></div></div></div>
 <div class="screen" id="screen-journal"><div class="card"><h2>📖 Adventure Journal</h2><p class="small">写真やメモを書いた日がここに残ります。</p><div id="journalGrid" class="journal-grid"></div></div></div>
 <div class="screen" id="screen-review"><div class="card"><h2>🌞 夏のふりかえり</h2><div id="reviewStats" class="stat-grid"></div></div></div>
-<div class="screen" id="screen-record"><div class="card"><h2>🏆 記録</h2><p class="small">外部フォントなしのオフライン対応版です。親モードで追加した予定は更新しても残るように分けて保存します。</p><button type="button" class="ghost" id="exportBtn">データを書き出し</button><textarea id="exportArea" placeholder="ここに書き出しデータが表示されます"></textarea></div></div>
+<div class="screen" id="screen-record"><div class="card"><h2>🏆 記録</h2><p class="small">外部フォントなしのオフライン対応版です。親モードで追加した予定は更新しても残るように分けて保存します。日付更新を強化済みです。</p><button type="button" class="ghost" id="exportBtn">データを書き出し</button><textarea id="exportArea" placeholder="ここに書き出しデータが表示されます"></textarea></div></div>
 </div>
 
 <nav class="bottom-nav">
@@ -534,21 +534,34 @@ function setupExport(){
   document.getElementById("exportBtn").addEventListener("click",()=>{ document.getElementById("exportArea").value=JSON.stringify(state,null,2); });
 }
 
+
 function currentDateKey(){
   const d = new Date();
   return d.toISOString().slice(0,10);
 }
 function refreshIfDateChanged(){
-  if(currentDateKey() !== keyDate){
-    location.reload();
+  const nowKey = currentDateKey();
+  if(nowKey !== keyDate){
+    const base = location.origin + location.pathname;
+    location.replace(base + "?date=" + nowKey + "&refresh=" + Date.now());
   }
 }
-window.addEventListener("pageshow", refreshIfDateChanged);
-document.addEventListener("visibilitychange", ()=>{ if(!document.hidden) refreshIfDateChanged(); });
-window.addEventListener("focus", refreshIfDateChanged);
-setInterval(refreshIfDateChanged, 60000);
+function installDateRefreshGuards(){
+  ["pageshow","focus","resume"].forEach(eventName=>{
+    window.addEventListener(eventName, refreshIfDateChanged);
+  });
+  document.addEventListener("visibilitychange", ()=>{
+    if(!document.hidden) refreshIfDateChanged();
+  });
+  ["pointerdown","touchstart","click"].forEach(eventName=>{
+    document.addEventListener(eventName, refreshIfDateChanged, {capture:true, passive:true});
+  });
+  setInterval(refreshIfDateChanged, 15000);
+}
+
 
 async function init(){
+  installDateRefreshGuards();
   dateSetup(); packetSetup(); setupTasks(); setupScheduleForm(); setupNav(); setupParentMode(); setupExport();
   await openDB(); setupPhoto(); renderSchedules(); renderReview(); await loadTodayPhoto(); await renderJournal(); save();
 }
