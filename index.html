@@ -95,6 +95,14 @@ button.ghost{background:#f4ede1;color:var(--muted);box-shadow:none}
 .photo-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:10px}
 .hidden-input{display:none}
 .memo-row{display:grid;gap:8px;margin-top:12px}
+
+.journal-list{display:grid;gap:12px}
+.journal-entry{background:white;border:1px solid var(--line);border-radius:20px;padding:12px}
+.journal-entry img{width:100%;max-height:260px;object-fit:cover;border-radius:16px;margin:8px 0;border:1px solid var(--line)}
+.journal-entry-date{font-weight:700;color:var(--ink);font-size:16px}
+.journal-entry-tasks{font-size:13px;color:var(--muted);line-height:1.6}
+.journal-entry-memo{background:#fffaf0;border:1px solid var(--line);border-radius:14px;padding:10px;margin-top:8px;font-size:14px;line-height:1.6}
+
 .journal-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .journal-cell{background:white;border:1px solid var(--line);border-radius:16px;min-height:92px;padding:8px;overflow:hidden}
 .journal-cell img{width:100%;height:64px;object-fit:cover;border-radius:12px}
@@ -215,9 +223,9 @@ button.ghost{background:#f4ede1;color:var(--muted);box-shadow:none}
 </div>
 
 <div class="screen" id="screen-calendar"><div class="card"><h2>📅 カレンダー</h2><p class="small">登録済みの予定一覧です。</p><div id="allSchedules" class="schedule-list"></div></div></div>
-<div class="screen" id="screen-journal"><div class="card"><h2>📖 Adventure Journal</h2><p class="small">写真やメモを書いた日がここに残ります。</p><div id="journalGrid" class="journal-grid"></div></div></div>
+<div class="screen" id="screen-journal"><div class="card"><h2>📖 Adventure Journal</h2><p class="small">写真やメモを書いた日がここに残ります。</p><div id="journalGrid" class="journal-list"></div></div></div>
 <div class="screen" id="screen-review"><div class="card"><h2>🌞 夏のふりかえり</h2><div id="reviewStats" class="stat-grid"></div></div></div>
-<div class="screen" id="screen-record"><div class="card"><h2>🏆 記録</h2><p class="small">外部フォントなしのオフライン対応版です。親モードで追加した予定は更新しても残るように分けて保存します。日付更新・ふりかえり集計・日付ずれを修正済みです。</p><button type="button" class="ghost" id="exportBtn">データを書き出し</button><textarea id="exportArea" placeholder="ここに書き出しデータが表示されます"></textarea></div></div>
+<div class="screen" id="screen-record"><div class="card"><h2>🏆 記録</h2><p class="small">外部フォントなしのオフライン対応版です。親モードで追加した予定は更新しても残るように分けて保存します。日付更新・ふりかえり集計・日付ずれ・日記表示を修正済みです。</p><button type="button" class="ghost" id="exportBtn">データを書き出し</button><textarea id="exportArea" placeholder="ここに書き出しデータが表示されます"></textarea></div></div>
 </div>
 
 <nav class="bottom-nav">
@@ -488,25 +496,52 @@ function setupPhoto(){
   input.addEventListener("change",()=>{
     const file=input.files && input.files[0]; if(!file) return;
     const reader=new FileReader();
-    reader.onload=async e=>{ await photoPut(keyDate,e.target.result); await loadTodayPhoto(); await renderJournal(); };
+    reader.onload=async e=>{ await photoPut(keyDate,e.target.result); if(!state.days[keyDate]) state.days[keyDate]={}; state.days[keyDate].hasPhoto=true; state.days[keyDate].updatedAt=new Date().toISOString(); save(); await loadTodayPhoto(); await renderJournal(); renderReview(); };
     reader.readAsDataURL(file);
   });
-  document.getElementById("removePhotoBtn").addEventListener("click",async()=>{ await photoDelete(keyDate); await loadTodayPhoto(); await renderJournal(); });
+  document.getElementById("removePhotoBtn").addEventListener("click",async()=>{ await photoDelete(keyDate); if(!state.days[keyDate]) state.days[keyDate]={}; state.days[keyDate].hasPhoto=false; state.days[keyDate].updatedAt=new Date().toISOString(); save(); await loadTodayPhoto(); await renderJournal(); renderReview(); });
   document.getElementById("memoInput").value=state.days[keyDate].memo || "";
-  document.getElementById("saveMemoBtn").addEventListener("click",()=>{ state.days[keyDate].memo=document.getElementById("memoInput").value.trim(); save(); renderJournal(); });
+  document.getElementById("saveMemoBtn").addEventListener("click",()=>{ state.days[keyDate].memo=document.getElementById("memoInput").value.trim(); state.days[keyDate].updatedAt=new Date().toISOString(); save(); renderJournal(); renderReview(); });
 }
 async function renderJournal(){
   const grid=document.getElementById("journalGrid");
   grid.innerHTML="";
-  const dates=Object.keys(state.days).sort().reverse();
-  if(!dates.length){ grid.innerHTML='<div class="small">まだ記録がありません。</div>'; return; }
-  for(const date of dates.slice(0,30)){
-    const cell=document.createElement("div");
-    cell.className="journal-cell";
+  const dates=Object.keys(state.days || {}).sort().reverse();
+
+  const visibleDates=[];
+  for(const date of dates){
+    const day=state.days[date] || {};
+    const hasTask=Object.entries(day).some(([k,v])=>v===true && taskLabels[k]);
+    const hasMemo=!!day.memo;
+    const hasPhotoFlag=!!day.hasPhoto;
+    if(hasTask || hasMemo || hasPhotoFlag || date===keyDate){
+      visibleDates.push(date);
+    }
+  }
+
+  if(!visibleDates.length){
+    grid.innerHTML='<div class="small">まだ日記がありません。チェック、写真、メモを入れるとここに残ります。</div>';
+    return;
+  }
+
+  for(const date of visibleDates.slice(0,60)){
+    const day=state.days[date] || {};
     const photo=await photoGet(date);
-    const done=Object.entries(state.days[date]).filter(([k,v])=>v===true && taskLabels[k]).map(([k])=>taskLabels[k]);
-    cell.innerHTML=`<div class="journal-date">${date.slice(5).replace("-","/")}</div>${photo ? `<img src="${photo}">` : `<div style="font-size:30px;text-align:center;padding:14px">📖</div>`}<div class="small">${done.slice(0,2).join("・") || "記録"}</div>`;
-    grid.appendChild(cell);
+    if(photo && !day.hasPhoto){
+      day.hasPhoto=true;
+      save();
+    }
+    const done=Object.entries(day).filter(([k,v])=>v===true && taskLabels[k]).map(([k])=>taskLabels[k]);
+    const entry=document.createElement("div");
+    entry.className="journal-entry";
+    const formatted=date.slice(5).replace("-","/");
+    entry.innerHTML=`
+      <div class="journal-entry-date">📖 ${formatted}</div>
+      ${photo ? `<img src="${photo}" alt="${formatted}の写真">` : ""}
+      <div class="journal-entry-tasks">${done.length ? "✅ " + done.join("・") : "チェック記録はまだありません"}</div>
+      ${day.memo ? `<div class="journal-entry-memo">${day.memo.replace(/</g,"&lt;").replace(/>/g,"&gt;")}</div>` : ""}
+    `;
+    grid.appendChild(entry);
   }
 }
 function renderReview(){
@@ -515,7 +550,8 @@ function renderReview(){
   Object.values(state.days || {}).forEach(day=>{
     const hasTask = Object.entries(day).some(([k,v])=>v===true && taskLabels[k]);
     const hasMemo = !!day.memo;
-    if(hasTask || hasMemo) recordedDays++;
+    const hasPhoto = !!day.hasPhoto;
+    if(hasTask || hasMemo || hasPhoto) recordedDays++;
     Object.entries(day).forEach(([k,v])=>{
       if(v===true && taskLabels[k]) counts[k]=(counts[k]||0)+1;
     });
