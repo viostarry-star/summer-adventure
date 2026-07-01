@@ -1,8 +1,9 @@
 # Summer Adventure
 
-## Version 1.2.1 Date Fix
-- Stronger automatic date refresh for home screen / PWA use.
-- Checks date when the app is reopened, focused, tapped, or brought back from the background.
-- Keeps the v1.2 safe schedule data protection.
+## Version 1.2.2 Review Fix
+- Fixes reflection / review counts.
+- Records check changes more reliably.
+- Keeps v1.2.1 date refresh behavior.
+- Keeps parent-added schedule protection.
 
 Data is saved in the same browser on the same device.
